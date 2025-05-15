@@ -1,11 +1,11 @@
-% 参数
-area_target = 6500;  % 目标总面积
+%% 需要预输入以下参数
+area_target = 2000;  % 目标总面积
 L = 100;             % 区域大小
-r_min = 1;         % 最小半径
-r_max = 3.5;         % 最大半径
+r_min = 5;         % 最小半径
+r_max = 5;         % 最大半径
 min_dist = 0.2;      % 粒子间最小边缘距离
 
-% 初始化
+%% 初始化
 circles = []; % 每行 [x, y, r]
 current_area = 0;
 
@@ -36,6 +36,28 @@ while current_area < area_target
     end
 end
 %% 
+
+% 粒子数据：每行是 [x, y, 直径]
+% 如果你的数据保存在变量 particles 中，则直接用它
+
+num_particles = size(circles, 1);
+min_dis = inf;  % 初始化最小间距
+min_pair = [];
+
+for i = 1:num_particles-1
+    for j = i+1:num_particles
+        center_dist = norm(circles(i,1:2) - circles(j,1:2));
+        surface_dist = center_dist - (circles(i,3) + circles(j,3));
+
+        if surface_dist < min_dis
+            min_dis = surface_dist;
+            min_pair = [i, j];
+        end
+    end
+end
+
+fprintf('最小表面间距为：%.4f\n', min_dis);
+fprintf('最小间距粒子编号为：%d 和 %d\n', min_pair(1), min_pair(2));
 
 % 绘制结果
 figure;
