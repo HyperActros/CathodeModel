@@ -1,15 +1,15 @@
 %% 写入预处理信息，将会创建一个板和许多球粒子。各部件都创建了set。
 %% 请在Abaqus中手动Merge
 model_name = '';
-python_script = 'abaqus_partition.py';
+python_script = 'PLATE_PARTICLE.py';
 
 % 板材尺寸
-plate_width = 0.1;
-plate_height = 0.1;
+plate_width = ;
+plate_height = ;
 
 
 % 孔的坐标和直径 (x, y, d)
-particles = [];
+particles = [ ];
 
 %% ==== Life finds a way ====
 % ==== Abaqus initialization ====
@@ -28,11 +28,11 @@ fprintf(fid, 'model_name = "%s"\n', model_name);
 fprintf(fid, 'mdb.Model(name=model_name, modelType=STANDARD_EXPLICIT)\n\n');
 
 % ==== PLATE ====
-fprintf(fid, 's = mdb.models[model_name].ConstrainedSketch(name="plate_sketch", sheetSize=10.0)\n');
-fprintf(fid, 's.rectangle(point1=(0, 0), point2=(%.9f, %.9f))\n', plate_width, plate_height);
+fprintf(fid, ' = mdb.models[model_name].ConstrainedSketch(name="plate_sketch", sheetSize=10.0)\n');
+fprintf(fid, '.rectangle(point1=(0, 0), point2=(%.9f, %.9f))\n', plate_width, plate_height);
 fprintf(fid, 'p = mdb.models[model_name].Part(name="Plate", dimensionality=TWO_D_PLANAR, type=DEFORMABLE_BODY)\n');
 fprintf(fid, 'Plate = mdb.models[model_name].parts["Plate"]\n');
-fprintf(fid, 'p.BaseShell(sketch=s)\n\n');
+fprintf(fid, 'p.BaseShell(sketch=)\n\n');
 fprintf(fid, 'p.Set(name="BINDER", faces=p.faces[:])\n');
 
 % ==== PARTICLE ====
@@ -54,10 +54,10 @@ for i = 1:size(particles, 1)
     r = particles(i, 3)/2;
     
     fprintf(fid, 'pickedFaces = p.faces.findAt(((%.9f, %.9f, 0.0),))\n', x, y);
-    fprintf(fid, 's = mdb.models["%s"].ConstrainedSketch(name="partition_sketch", sheetSize=100.0)\n', model_name);
-    fprintf(fid, 's.Line(point1=(%.9f, %.9f), point2=(%.9f, %.9f))\n', x-2*r, y, x+2*r, y); % 水平
-    fprintf(fid, 's.Line(point1=(%.9f, %.9f), point2=(%.9f, %.9f))\n', x, y-2*r, x, y+2*r); % 竖直
-    fprintf(fid, 'p.PartitionFaceBySketch(faces=pickedFaces, sketch=s)\n');
+    fprintf(fid, ' = mdb.models["%s"].ConstrainedSketch(name="partition_sketch", sheetSize=100.0)\n', model_name);
+    fprintf(fid, '.Line(point1=(%.9f, %.9f), point2=(%.9f, %.9f))\n', x-2*r, y, x+2*r, y); % 水平
+    fprintf(fid, '.Line(point1=(%.9f, %.9f), point2=(%.9f, %.9f))\n', x, y-2*r, x, y+2*r); % 竖直
+    fprintf(fid, 'p.PartitionFaceBySketch(faces=pickedFaces, sketch=)\n');
 end
 
 % ==== STEP ====
@@ -104,4 +104,4 @@ fprintf(fid, 'mdb.saveAs(pathName="Battery_Model.cae")\n');
 fclose(fid);
 
 % 提示完成
-fprintf('Python 脚本已生成：%s\n', python_script);
+fprintf('Python 脚本已生成：%\n', python_script);
