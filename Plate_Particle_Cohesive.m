@@ -78,6 +78,18 @@ fprintf(fid, 'p_ring.BaseShell(sketch=ring_sketch)\n');
 fprintf(fid, 'Cohesive = mdb.models[model_name].parts["Cohesive"]\n');
 fprintf(fid, 'p_ring.Set(name="COHESIVE", faces=p_ring.faces[:])\n');
 
+for i = 1:size(particles,1)
+    x = particles(i,1);
+    y = particles(i,2);
+    r = particles(i,3)/2 + dr; % 切割线覆盖外圆
+    
+    fprintf(fid, 'f = p_ring.faces.getByBoundingBox(%.9f, %.9f, -1e-6, %.9f, %.9f, 1e-6)\n', x - r*1.1, y - r*1.1, x + r*1.1, y + r*1.1);
+    fprintf(fid, 'partition_sketch = mdb.models[model_name].ConstrainedSketch(name="partition_sketch", sheetSize=10.0, gridSpacing=0.1)\n');
+    fprintf(fid, 'partition_sketch.Line(point1=(%.9f, %.9f), point2=(%.9f, %.9f))\n', x - r*1.5, y, x + r*1.5, y); % 水平线
+    fprintf(fid, 'partition_sketch.Line(point1=(%.9f, %.9f), point2=(%.9f, %.9f))\n', x, y - r*1.5, x, y + r*1.5); % 垂直线
+    fprintf(fid, 'p_ring.PartitionFaceBySketch(faces=f, sketch=partition_sketch)\n');
+end
+
 % ==== STEP ====
 fprintf(fid, 'mdb.models[model_name].StaticStep(\n');
 fprintf(fid, '    name="Step-1",\n');
@@ -124,3 +136,4 @@ fclose(fid);
 
 % 提示完成
 fprintf('Python 脚本已生成：%\n', python_script);
+
